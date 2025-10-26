@@ -1,28 +1,47 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react';
+import Navbar from './components/Navbar';
+import Hero from './components/Hero';
+import Sections from './components/Sections';
+import ContactFooter from './components/ContactFooter';
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [dark, setDark] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    return localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  });
+
+  useEffect(() => {
+    document.title = 'Pavan | Full Stack Developer';
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute('content', 'Pavan is a Full Stack Developer crafting scalable, responsive web experiences with React, Node.js, Express, and MongoDB. Explore projects, skills, and get in touch.');
+    } else {
+      const m = document.createElement('meta');
+      m.name = 'description';
+      m.content = 'Pavan is a Full Stack Developer crafting scalable, responsive web experiences with React, Node.js, Express, and MongoDB. Explore projects, skills, and get in touch.';
+      document.head.appendChild(m);
+    }
+  }, []);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (dark) {
+      root.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      root.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [dark]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">
-          Vibe Coding Platform
-        </h1>
-        <p className="text-gray-600 mb-6">
-          Your AI-powered development environment
-        </p>
-        <div className="text-center">
-          <button
-            onClick={() => setCount(count + 1)}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
-          >
-            Count is {count}
-          </button>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-black text-slate-800 dark:text-slate-100 scroll-smooth">
+      <Navbar dark={dark} setDark={setDark} />
+      <main>
+        <Hero />
+        <Sections />
+        <ContactFooter />
+      </main>
     </div>
-  )
+  );
 }
-
-export default App
